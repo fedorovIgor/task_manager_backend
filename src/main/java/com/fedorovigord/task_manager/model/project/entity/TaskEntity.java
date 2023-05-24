@@ -2,12 +2,14 @@ package com.fedorovigord.task_manager.model.project.entity;
 
 import com.fedorovigord.task_manager.model.project.Task;
 import lombok.*;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "task")
 public class TaskEntity {
 
     private int id;
@@ -27,5 +29,7 @@ public class TaskEntity {
         this.status = task.getStatus();
         this.startTime = task.getStartData();
         this.finishTime = task.getFinishData();
+        if (task.getProject() != null)
+            this.projectIdFk = task.getProject().getId();
     }
 }

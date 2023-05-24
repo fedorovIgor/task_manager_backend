@@ -63,7 +63,8 @@ public class ProjectService {
                 .doOnNext(p -> {
                     taskRepository.findByProjectId(p.getId())
                             .map(Task::new)
-                            .doOnNext(t -> p.addTask(t));
+                            .doOnNext(t -> p.addTask(t))
+                            .subscribe();
                 });
     }
 }
