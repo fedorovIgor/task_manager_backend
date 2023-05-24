@@ -16,6 +16,7 @@ public class Task {
     private LocalDateTime startData;
     private LocalDateTime finishData;
     private User user;
+    private Project project;
 
     public Task() {
     }
