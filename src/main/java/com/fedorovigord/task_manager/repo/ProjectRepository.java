@@ -9,4 +9,5 @@ public interface ProjectRepository extends ReactiveCrudRepository<ProjectEntity,
 
     @Query("select * from project where name = $1")
     Mono<ProjectEntity> findByName(String name);
+
 }
