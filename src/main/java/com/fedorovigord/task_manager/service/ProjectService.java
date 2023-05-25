@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,13 +59,16 @@ public class ProjectService {
     }
 
     public Mono<ProjectInfo> getProjectInfo(Integer projectId) {
-        return projectRepository.findById(projectId)
-                .map(ProjectInfo::new)
-                .doOnNext(p -> {
-                    taskRepository.findByProjectId(p.getId())
+        //search project by id, then search list of tasks and combine
+        return Mono
+                .zip(projectRepository.findById(projectId)
+                            .map(ProjectInfo::new),
+                    taskRepository.findByProjectId(projectId)
                             .map(Task::new)
-                            .doOnNext(t -> p.addTask(t))
-                            .subscribe();
-                });
+                            .collectList(),
+                    (p,t) -> {
+                            p.setTasks(t);
+                            return p;
+                    });
     }
 }

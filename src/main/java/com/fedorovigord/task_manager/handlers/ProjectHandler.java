@@ -38,7 +38,8 @@ public class ProjectHandler {
     public Mono<ServerResponse> getProjectInfo(ServerRequest req) {
         final Integer projectId = Integer.parseInt(req.pathVariable("projectId"));
 
-        return ok().contentType(MediaType.TEXT_EVENT_STREAM)
+        return ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(projectService.getProjectInfo(projectId), ProjectInfo.class);
     }
 }

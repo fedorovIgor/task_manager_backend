@@ -15,20 +15,20 @@ public class RoutersConfig {
     @Bean
     public RouterFunction<ServerResponse> projectRouter(ProjectHandler projectHandler) {
         return route()
-                .GET("/project", projectHandler::getAll)
-                .POST("/project", projectHandler::createProject)
-                .PUT("/project", projectHandler::updateProject)
+                .GET("/api/v1/project", projectHandler::getAll)
+                .POST("/api/v1/project", projectHandler::createProject)
+                .PUT("/api/v1/project", projectHandler::updateProject)
 
-                .GET( "/project/{projectId}", projectHandler::getProjectInfo)
+                .GET( "/api/v1/project/{projectId}", projectHandler::getProjectInfo)
                 .build();
     }
 
     @Bean
     public RouterFunction<ServerResponse> taskRouter(TaskHandler taskHandler) {
         return route()
-                .GET("task/{taskId}", taskHandler::getBYId)
-                .POST("task", taskHandler::createTask)
-                .PUT("task", taskHandler::updateTask)
+                .GET("/api/v1/task/{taskId}", taskHandler::getBYId)
+                .POST("/api/v1/task", taskHandler::createTask)
+                .PUT("/api/v1/task", taskHandler::updateTask)
                 .build();
 
     }

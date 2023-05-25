@@ -2,6 +2,7 @@ package com.fedorovigord.task_manager.model.project.entity;
 
 import com.fedorovigord.task_manager.model.project.Task;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "task")
 public class TaskEntity {
 
+    @Id
     private int id;
     private String header;
     private String description;
