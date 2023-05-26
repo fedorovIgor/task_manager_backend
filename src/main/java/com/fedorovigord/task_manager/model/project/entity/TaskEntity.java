@@ -22,6 +22,7 @@ public class TaskEntity {
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
     private int projectIdFk;
+    private int userIdFk;
 
     public TaskEntity(Task task) {
         this.id = task.getId();
@@ -31,7 +32,10 @@ public class TaskEntity {
         this.status = task.getStatus();
         this.startTime = task.getStartData();
         this.finishTime = task.getFinishData();
+
         if (task.getProject() != null)
             this.projectIdFk = task.getProject().getId();
+        if (task.getUser() != null)
+            this.userIdFk = task.getUser().getId();
     }
 }
