@@ -22,6 +22,5 @@ public class User {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.password = user.getPassword();
     }
 }
