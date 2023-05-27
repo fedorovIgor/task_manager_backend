@@ -6,3 +6,9 @@ spring:
     url: r2dbc:postgresql://localhost:5432/project_management
     username: postgres
     password: postgres
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://192.168.1.100:28080/auth/realms/task_manager
