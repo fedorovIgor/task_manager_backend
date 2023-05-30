@@ -1,8 +1,6 @@
 package com.fedorovigord.task_manager.handlers;
 
-import com.fedorovigord.task_manager.model.project.Project;
 import com.fedorovigord.task_manager.model.project.Task;
-import com.fedorovigord.task_manager.model.project.entity.TaskEntity;
 import com.fedorovigord.task_manager.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -30,6 +28,14 @@ public class TaskHandler {
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(taskService.getTaskById(taskId), Task.class);
+    }
+
+    public Mono<ServerResponse> getByProjectId(ServerRequest req) {
+        final int projectId = Integer.parseInt(req.pathVariable("projectId"));
+
+        return ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(taskService.getTasksByProjectId(projectId), Task.class);
     }
 
     public Mono<ServerResponse> updateTask(ServerRequest req) {

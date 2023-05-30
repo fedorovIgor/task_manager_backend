@@ -11,18 +11,12 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
-
 
 
     public Flux<Project> getAll() {
@@ -58,17 +52,27 @@ public class ProjectService {
                 .map(Project::new);
     }
 
+    // method is blocked until all tasks arrives
+    // use two call - to getProjectById and getTasksByProjectId
     public Mono<ProjectInfo> getProjectInfo(Integer projectId) {
         //search project by id, then search list of tasks and combine
-        return Mono
-                .zip(projectRepository.findById(projectId)
-                            .map(ProjectInfo::new),
-                    taskRepository.findByProjectId(projectId)
-                            .map(Task::new)
-                            .collectList(),
+
+        var projectInfo = projectRepository.findById(projectId)
+                .map(ProjectInfo::new);
+
+        var tasks = taskRepository.findByProjectId(projectId)
+                .map(Task::new)
+                .collectList();
+
+        return Mono.zip(projectInfo, tasks,
                     (p,t) -> {
                             p.setTasks(t);
                             return p;
                     });
+    }
+
+    public Mono<Project> getProjectById(Integer projectId) {
+        return projectRepository.findById(projectId)
+                .map(Project::new);
     }
 }

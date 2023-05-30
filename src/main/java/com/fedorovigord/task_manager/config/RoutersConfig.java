@@ -3,7 +3,6 @@ package com.fedorovigord.task_manager.config;
 import com.fedorovigord.task_manager.handlers.ProjectHandler;
 import com.fedorovigord.task_manager.handlers.TaskHandler;
 import com.fedorovigord.task_manager.handlers.UserHandler;
-import com.fedorovigord.task_manager.model.user.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -21,7 +20,7 @@ public class RoutersConfig {
                 .POST("/api/v1/project", projectHandler::createProject)
                 .PUT("/api/v1/project", projectHandler::updateProject)
 
-                .GET( "/api/v1/project/{projectId}", projectHandler::getProjectInfo)
+                .GET( "/api/v1/project/{projectId}", projectHandler::getProjectById)
                 .build();
     }
 
@@ -29,6 +28,7 @@ public class RoutersConfig {
     public RouterFunction<ServerResponse> taskRouter(TaskHandler taskHandler) {
         return route()
                 .GET("/api/v1/task/{taskId}", taskHandler::getBYId)
+                .GET("/api/v1/project/{projectId}/task", taskHandler::getByProjectId)
                 .POST("/api/v1/task", taskHandler::createTask)
                 .PUT("/api/v1/task", taskHandler::updateTask)
                 .build();

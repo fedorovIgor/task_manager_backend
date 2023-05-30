@@ -1,7 +1,5 @@
 package com.fedorovigord.task_manager.handlers;
 
-import com.fedorovigord.task_manager.model.project.Project;
-import com.fedorovigord.task_manager.model.project.Task;
 import com.fedorovigord.task_manager.model.user.User;
 import com.fedorovigord.task_manager.service.UserService;
 import lombok.RequiredArgsConstructor;

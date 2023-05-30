@@ -5,7 +5,9 @@ import com.fedorovigord.task_manager.model.project.entity.TaskEntity;
 import com.fedorovigord.task_manager.repo.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +17,11 @@ public class TaskService {
 
     public Mono<Task> getTaskById (Integer taskId) {
         return taskRepository.findById(taskId)
+                .map(Task::new);
+    }
+
+    public Flux<Task> getTasksByProjectId(int projectId) {
+        return taskRepository.findByProjectId(projectId)
                 .map(Task::new);
     }
 

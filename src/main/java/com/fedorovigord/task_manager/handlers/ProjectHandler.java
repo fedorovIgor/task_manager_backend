@@ -1,7 +1,6 @@
 package com.fedorovigord.task_manager.handlers;
 
 import com.fedorovigord.task_manager.model.project.Project;
-import com.fedorovigord.task_manager.model.project.ProjectInfo;
 import com.fedorovigord.task_manager.service.ProjectService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -35,11 +34,11 @@ public class ProjectHandler {
                 .body(projectService.updateProject(req.bodyToMono(Project.class)), Project.class);
     }
 
-    public Mono<ServerResponse> getProjectInfo(ServerRequest req) {
+    public Mono<ServerResponse> getProjectById(ServerRequest req) {
         final Integer projectId = Integer.parseInt(req.pathVariable("projectId"));
 
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(projectService.getProjectInfo(projectId), ProjectInfo.class);
+                .body(projectService.getProjectById(projectId), Project.class);
     }
 }

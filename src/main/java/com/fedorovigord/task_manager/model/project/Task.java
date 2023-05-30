@@ -13,6 +13,7 @@ public class Task {
     private String header;
     private String linkInfo;
     private String status;
+    private String description;
     private LocalDateTime startData;
     private LocalDateTime finishData;
     private User user;
@@ -28,5 +29,6 @@ public class Task {
         this.status = taskEntity.getStatus();
         this.startData = taskEntity.getStartTime();
         this.finishData = taskEntity.getFinishTime();
+        this.description = taskEntity.getDescription();
     }
 }

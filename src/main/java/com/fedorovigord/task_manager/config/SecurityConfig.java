@@ -3,6 +3,7 @@ package com.fedorovigord.task_manager.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,12 +11,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.*;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Mono;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -27,9 +28,16 @@ public class SecurityConfig {
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 
         http
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/v1/user/**").hasAuthority("ROLE_ADMIN")
-                        .anyExchange().authenticated()
+                        .pathMatchers(HttpMethod.POST,"/api/v1/user/**").hasAuthority("ROLE_ADMIN")
+                        .pathMatchers(HttpMethod.PUT,"/api/v1/user/**").hasAuthority("ROLE_ADMIN")
+
+                        .pathMatchers(HttpMethod.GET,"/api/v1/project/**").hasAuthority("ROLE_USER")
+                        .pathMatchers(HttpMethod.POST,"/api/v1/project/**").hasAuthority("ROLE_ADMIN")
+                        .pathMatchers(HttpMethod.PUT,"/api/v1/project/**").hasAuthority("ROLE_ADMIN")
+                        .anyExchange() .authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(withDefaults())
@@ -38,6 +46,23 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(Arrays.asList("X-Get-Header"));
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
