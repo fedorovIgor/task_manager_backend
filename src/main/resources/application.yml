@@ -3,7 +3,7 @@ server:
 
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/project_management
+    url: r2dbc:postgresql://localhost:5556/project_management
     username: postgres
     password: postgres
 
