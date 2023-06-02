@@ -35,6 +35,13 @@ public class UserHandler {
         return ok().contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(userService.getAllUsersWithRoles(), User.class);
     }
+
+
+    public Mono<ServerResponse> getAllRoles(ServerRequest req) {
+
+        return ok().contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(userService.getAllRoles(), String.class);
+    }
     public Mono<ServerResponse> createUser(ServerRequest req) {
         final var user = userService.createUser(req.bodyToMono(User.class));
 

@@ -30,6 +30,15 @@ public class UserKeycloakProxy {
                 .map(User::new);
     }
 
+    public Flux<RoleDto> getAllRoles() {
+        String GET_ROLES_URI = "http://localhost:28080/auth/admin/realms/task_manager/roles";
+
+        return webClient.get()
+                .uri(GET_ROLES_URI)
+                .retrieve()
+                .bodyToFlux(RoleDto.class);
+    }
+
     public Flux<String> getUserRoles(String userKeycloakId) {
         String GET_USER_ROLES = "http://localhost:28080/auth/admin/realms/task_manager/users/" + userKeycloakId + "/role-mappings/realm";
 

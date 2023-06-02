@@ -20,6 +20,11 @@ public class UserService {
         return userProxy.getUserList();
     }
 
+    public Flux<String> getAllRoles() {
+        return userProxy.getAllRoles()
+                .map(r -> r.getName());
+    }
+
     public Flux<String> getUserRoles(String keycloakUserId) {
         return userProxy.getUserRoles(keycloakUserId);
     }

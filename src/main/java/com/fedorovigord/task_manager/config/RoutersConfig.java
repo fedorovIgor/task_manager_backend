@@ -39,6 +39,7 @@ public class RoutersConfig {
     public RouterFunction<ServerResponse> userRouter(UserHandler userHandler) {
         return route()
                 .GET("/api/v1/user", userHandler::getAllUsers)
+                .GET("api/v1/user/role",userHandler::getAllRoles)
                 .GET("/api/v1/user/{keycloakUserId}/role", userHandler::getUserRoles)
                 .POST("/api/v1/user", userHandler::createUser)
                 .PUT("/api/v1/user", userHandler::addRoleToUser)
