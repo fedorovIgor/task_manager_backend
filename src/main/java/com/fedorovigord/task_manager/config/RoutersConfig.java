@@ -29,6 +29,7 @@ public class RoutersConfig {
         return route()
                 .GET("/api/v1/task/{taskId}", taskHandler::getBYId)
                 .GET("/api/v1/project/{projectId}/task", taskHandler::getByProjectId)
+                .GET("/api/v1/user/{userId}/task", taskHandler::getTasksByUserId)
                 .POST("/api/v1/task", taskHandler::createTask)
                 .PUT("/api/v1/task", taskHandler::updateTask)
                 .build();

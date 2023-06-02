@@ -11,4 +11,7 @@ public interface TaskRepository extends ReactiveCrudRepository<TaskEntity, Integ
 
     @Query("select * from task where project_id_fk = $1")
     Flux<TaskEntity> findByProjectId(int id);
+
+    @Query("select * from task where user_keycloak_id = $1")
+    Flux<TaskEntity> findByUserId(String userId);
 }
