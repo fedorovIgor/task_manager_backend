@@ -37,10 +37,11 @@ public class RoutersConfig {
     @Bean
     public RouterFunction<ServerResponse> userRouter(UserHandler userHandler) {
         return route()
-                .GET("/api/v1/user/{userId}", userHandler::getUserById)
                 .GET("/api/v1/user", userHandler::getAllUsers)
+                .GET("/api/v1/user/{keycloakUserId}/role", userHandler::getUserRoles)
                 .POST("/api/v1/user", userHandler::createUser)
-                .PUT("/api/v1/user", userHandler::updateUser)
+                .PUT("/api/v1/user", userHandler::addRoleToUser)
+                .DELETE("/api/v1/user", userHandler::deleteRoleUser)
                 .build();
     }
 }

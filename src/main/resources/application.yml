@@ -12,3 +12,13 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://192.168.1.100:28080/auth/realms/task_manager
+
+      client:
+        registration:
+          keycloak:
+            authorization-grant-type: client_credentials
+            client-id: admin-cli
+            client-secret: Am25Ny6GOHK73SG9Yh9tLBNeICBdLk39
+        provider:
+          keycloak:
+            token-uri: http://localhost:28080/auth/realms/master/protocol/openid-connect/token

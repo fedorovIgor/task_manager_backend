@@ -4,7 +4,12 @@ import com.fedorovigord.task_manager.model.user.User;
 import com.fedorovigord.task_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -17,28 +22,37 @@ public class UserHandler {
 
     private final UserService userService;
 
-    public Mono<ServerResponse> getUserById(ServerRequest req) {
-        final Integer userId = Integer.parseInt(req.pathVariable("userId"));
+
+    public Mono<ServerResponse> getUserRoles(ServerRequest req) {
+        final String userKeycloakId = req.pathVariable("keycloakUserId");
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(userService.getUserById(userId), User.class);
+                .body(userService.getUserRoles(userKeycloakId), String.class);
     }
 
     public Mono<ServerResponse> getAllUsers(ServerRequest req) {
-        return ok().contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(userService.getAllUsers(), User.class);
-    }
 
+        return ok().contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(userService.getAllUsersWithRoles(), User.class);
+    }
     public Mono<ServerResponse> createUser(ServerRequest req) {
         final var user = userService.createUser(req.bodyToMono(User.class));
+
+        return ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(user, String.class);
+    }
+
+    public Mono<ServerResponse> addRoleToUser(ServerRequest req) {
+        final var user = userService.addRoleToUser(req.bodyToMono(User.class));
 
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(user, User.class);
     }
 
-    public Mono<ServerResponse> updateUser(ServerRequest req) {
-        final var user = userService.updateUser(req.bodyToMono(User.class));
+    public Mono<ServerResponse> deleteRoleUser(ServerRequest req) {
+        final var user = userService.deleteRoleUser(req.bodyToMono(User.class));
 
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)

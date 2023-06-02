@@ -44,3 +44,12 @@ public class TaskHandler {
                 .body(taskService.updateTask(req.bodyToMono(Task.class)), Task.class);
     }
 }
+//        return ReactiveSecurityContextHolder.getContext()
+//                .map(sc -> sc.getAuthentication())
+//                .map(Authentication::getName)
+//                .doOnNext(System.out::println)
+//                .flatMap(s -> ServerResponse.ok()
+//                        .contentType(MediaType.TEXT_EVENT_STREAM)
+//                        .body(userService.getAllUsers(), User.class)
+//                        );
+
