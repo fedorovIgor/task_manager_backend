@@ -42,7 +42,9 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(withDefaults())
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
+                                .jwtAuthenticationConverter(grantedAuthoritiesExtractor())))
+                .oauth2Client(withDefaults());
+
 
         return http.build();
     }
