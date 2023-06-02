@@ -16,7 +16,7 @@ public class Task {
     private String description;
     private LocalDateTime startData;
     private LocalDateTime finishData;
-    private User user;
+    private String userKeycloakId;
     private Project project;
 
     public Task() {
@@ -30,5 +30,6 @@ public class Task {
         this.startData = taskEntity.getStartTime();
         this.finishData = taskEntity.getFinishTime();
         this.description = taskEntity.getDescription();
+        this.userKeycloakId = taskEntity.getUserKeycloakId();
     }
 }

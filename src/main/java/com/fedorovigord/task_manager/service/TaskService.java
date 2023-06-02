@@ -25,6 +25,11 @@ public class TaskService {
                 .map(Task::new);
     }
 
+    public Flux<Task> getTasksByUserId(String userKeycloakId) {
+        return taskRepository.findByUserId(userKeycloakId)
+                .map(Task::new);
+    }
+
     public Mono<Task> updateTask(Mono<Task> task) {
         return task
                 .map(TaskEntity::new)

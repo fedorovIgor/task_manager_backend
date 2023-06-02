@@ -38,6 +38,14 @@ public class TaskHandler {
                 .body(taskService.getTasksByProjectId(projectId), Task.class);
     }
 
+    public Mono<ServerResponse> getTasksByUserId(ServerRequest req) {
+        final String projectId = req.pathVariable("userId");
+
+        return ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(taskService.getTasksByUserId(projectId), Task.class);
+    }
+
     public Mono<ServerResponse> updateTask(ServerRequest req) {
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
