@@ -35,8 +35,8 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.PUT,"/api/v1/user/**").hasAuthority("ROLE_ADMIN")
 
                         .pathMatchers(HttpMethod.GET,"/api/v1/project/**").hasAuthority("ROLE_USER")
-                        .pathMatchers(HttpMethod.POST,"/api/v1/project/**").hasAuthority("ROLE_ADMIN")
-                        .pathMatchers(HttpMethod.PUT,"/api/v1/project/**").hasAuthority("ROLE_ADMIN")
+                        .pathMatchers(HttpMethod.POST,"/api/v1/project/**").hasAuthority("ROLE_USER")
+                        .pathMatchers(HttpMethod.PUT,"/api/v1/project/**").hasAuthority("ROLE_USER")
                         .anyExchange() .authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

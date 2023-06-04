@@ -4,6 +4,8 @@ import com.fedorovigord.task_manager.model.project.Task;
 import com.fedorovigord.task_manager.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -18,9 +20,10 @@ public class TaskHandler {
     private final TaskService taskService;
 
     public Mono<ServerResponse> createTask(ServerRequest req) {
+        final var projectId = Integer.parseInt(req.pathVariable("projectId"));
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(taskService.saveTask(req.bodyToMono(Task.class)), Task.class);
+                .body(taskService.saveTask(req.bodyToMono(Task.class), projectId), Task.class);
     }
 
     public Mono<ServerResponse> getBYId(ServerRequest req) {
@@ -50,6 +53,22 @@ public class TaskHandler {
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(taskService.updateTask(req.bodyToMono(Task.class)), Task.class);
+    }
+
+    public Mono<ServerResponse> getTaskToWork(ServerRequest req) {
+        var userKeycloakId = ReactiveSecurityContextHolder.getContext()
+                .map(sc -> sc.getAuthentication())
+                .map(Authentication::getName);
+
+        return ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(taskService.getTaskToWork(req.bodyToMono(Task.class), userKeycloakId), Task.class);
+    }
+
+    public Mono<ServerResponse> getTaskToClose(ServerRequest req) {
+        return ok()
+                .contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(taskService.getTaskToClose(req.bodyToMono(Task.class)), Task.class);
     }
 }
 //        return ReactiveSecurityContextHolder.getContext()

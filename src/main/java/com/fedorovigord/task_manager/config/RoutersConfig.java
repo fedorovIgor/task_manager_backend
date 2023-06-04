@@ -30,8 +30,10 @@ public class RoutersConfig {
                 .GET("/api/v1/task/{taskId}", taskHandler::getBYId)
                 .GET("/api/v1/project/{projectId}/task", taskHandler::getByProjectId)
                 .GET("/api/v1/user/{userId}/task", taskHandler::getTasksByUserId)
-                .POST("/api/v1/task", taskHandler::createTask)
+                .POST("/api/v1/project/{projectId}/task", taskHandler::createTask)
                 .PUT("/api/v1/task", taskHandler::updateTask)
+                .PUT("/api/v1/task/work", taskHandler::getTaskToWork)
+                .PUT("/api/v1/task/close", taskHandler::getTaskToClose)
                 .build();
     }
 

@@ -18,6 +18,8 @@ public class Task {
     private LocalDateTime finishData;
     private String userKeycloakId;
     private Project project;
+    private String userName;
+    private String userEmail;
 
     public Task() {
     }

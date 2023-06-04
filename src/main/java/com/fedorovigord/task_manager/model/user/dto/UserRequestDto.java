@@ -26,6 +26,8 @@ public class UserRequestDto {
         this.enabled = true;
         this.username = user.getFirstName();
         this.email = user.getEmail();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
 
         var credential = new Credential();
         credential.temporary = true;

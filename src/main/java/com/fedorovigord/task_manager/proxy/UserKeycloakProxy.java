@@ -30,6 +30,15 @@ public class UserKeycloakProxy {
                 .map(User::new);
     }
 
+
+    public Mono<UserResponseDto> getUserById(String userId) {
+        String GET_USER_INFO = "http://localhost:28080/auth/admin/realms/task_manager/users/" + userId;
+
+        return webClient.get()
+                .uri(GET_USER_INFO)
+                .retrieve()
+                .bodyToMono(UserResponseDto.class);
+    }
     public Flux<RoleDto> getAllRoles() {
         String GET_ROLES_URI = "http://localhost:28080/auth/admin/realms/task_manager/roles";
 
