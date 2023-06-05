@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserKeycloakProxy {
+public class UserKeycloakProxy implements UserProxy {
 
     private final WebClient webClient;
 
