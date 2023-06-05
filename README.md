@@ -20,6 +20,7 @@
       <li>Click users and add user, set role ADMIN to user</li>
     </ol>
   </li>
+<li>Run service: ./gradlew bootRun </li>
 <li>Optional - run UI from "https://github.com/fedorovIgor/task_manager_UI"</li>
 </ol>
 
