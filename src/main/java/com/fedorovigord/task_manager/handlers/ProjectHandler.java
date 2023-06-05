@@ -2,6 +2,7 @@ package com.fedorovigord.task_manager.handlers;
 
 import com.fedorovigord.task_manager.model.project.Project;
 import com.fedorovigord.task_manager.service.ProjectService;
+import com.fedorovigord.task_manager.service.ProjectServiceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -15,8 +16,8 @@ public class ProjectHandler {
 
     private final ProjectService projectService;
 
-    public ProjectHandler(ProjectService projectService) {
-        this.projectService = projectService;
+    public ProjectHandler(ProjectServiceImpl projectServiceImpl) {
+        this.projectService = projectServiceImpl;
     }
 
     public Mono<ServerResponse> getAll(ServerRequest req) {
