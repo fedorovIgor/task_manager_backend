@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 public interface TaskService {
     Mono<Task> getTaskById (Integer taskId);
     Flux<Task> getTasksByProjectId(int projectId);
-    Flux<Task> getTasksByUserId(String userKeycloakId);
+    Flux<Task> getTasksByUserId(Mono<String> userKeycloakId);
     Mono<Task> updateTask(Mono<Task> task);
     Mono<Task> getTaskToWork(Mono<Task> task, Mono<String> userKeycloakId);
     Mono<Task> getTaskToClose(Mono<Task> task);

@@ -4,6 +4,8 @@ import com.fedorovigord.task_manager.model.user.User;
 import com.fedorovigord.task_manager.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -31,6 +33,14 @@ public class UserHandler {
                 .body(userService.getAllUsersWithRoles(), User.class);
     }
 
+    public Mono<ServerResponse> getUserInfo(ServerRequest req) {
+        final var userKey = ReactiveSecurityContextHolder.getContext()
+                .map(sc -> sc.getAuthentication())
+                .map(Authentication::getName);
+
+        return ok().contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(userService.getUserInfo(userKey), User.class);
+    }
 
     public Mono<ServerResponse> getAllRoles(ServerRequest req) {
 

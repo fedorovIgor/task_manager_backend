@@ -9,6 +9,8 @@ public interface UserService {
     Flux<String> getAllRoles();
     Flux<String> getUserRoles(String keycloakUserId);
     Flux<User> getAllUsersWithRoles();
+
+    Mono<User> getUserInfo(Mono<String> userId);
     Mono<String> createUser(Mono<User> user);
     Mono<User> addRoleToUser(Mono<User> user);
     Mono<User> deleteRoleUser(Mono<User> user);

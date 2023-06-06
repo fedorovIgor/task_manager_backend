@@ -41,8 +41,9 @@ public class TaskServiceImpl implements TaskService {
                 });
     }
 
-    public Flux<Task> getTasksByUserId(String userKeycloakId) {
-        return taskRepository.findByUserId(userKeycloakId)
+    public Flux<Task> getTasksByUserId(Mono<String> userKeycloakId) {
+        return userKeycloakId
+                .flatMapMany(taskRepository::findByUserId)
                 .map(Task::new);
     }
 
