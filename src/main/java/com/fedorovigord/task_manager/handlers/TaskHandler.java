@@ -42,11 +42,13 @@ public class TaskHandler {
     }
 
     public Mono<ServerResponse> getTasksByUserId(ServerRequest req) {
-        final String projectId = req.pathVariable("userId");
+        final var userId = ReactiveSecurityContextHolder.getContext()
+                .map(sc -> sc.getAuthentication())
+                .map(Authentication::getName);
 
         return ok()
                 .contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(taskService.getTasksByUserId(projectId), Task.class);
+                .body(taskService.getTasksByUserId(userId), Task.class);
     }
 
     public Mono<ServerResponse> updateTask(ServerRequest req) {

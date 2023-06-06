@@ -15,6 +15,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserProxy userProxy;
 
+
     public Flux<User> getAllUsers() {
         return userProxy.getUserList();
     }
@@ -44,6 +45,13 @@ public class UserServiceImpl implements UserService{
                 });
     }
 
+    @Override
+    public Mono<User> getUserInfo(Mono<String> userId) {
+        return userId
+                .flatMap(userProxy::getUserById)
+                .map(User::new);
+    }
+
 
     public Mono<String> createUser(Mono<User> user) {
         return user
@@ -52,7 +60,7 @@ public class UserServiceImpl implements UserService{
 
     }
 
-    //TODO not call method
+
     public Mono<User> addRoleToUser(Mono<User> user) {
         return user.doOnNext(u -> {
                     userProxy.getRoles()
@@ -61,7 +69,6 @@ public class UserServiceImpl implements UserService{
                 });
     }
 
-    //TODO not call method
     public Mono<User> deleteRoleUser(Mono<User> user) {
         return user
                 .doOnNext(u -> {
