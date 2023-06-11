@@ -19,7 +19,8 @@ public class Project {
     public Project() {
     }
 
-    public Project(LocalDateTime startDate, String name, String description, String status) {
+    public Project(int id, LocalDateTime startDate, String name, String description, String status) {
+        this.id = id;
         this.startDate = startDate;
         this.name = name;
         this.description = description;
