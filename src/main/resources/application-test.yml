@@ -1,0 +1,5 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5557/project_management_test
+    username: postgres
+    password: postgres
