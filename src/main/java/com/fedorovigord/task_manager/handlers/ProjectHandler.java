@@ -41,8 +41,16 @@ public class ProjectHandler {
     }
 
     public Mono<ServerResponse> updateProject(ServerRequest req) {
-        return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
-                .body(projectService.updateProject(req.bodyToMono(Project.class)), Project.class);
+        final var project = req.bodyToMono(Project.class);
+        final var responseBody = projectService.updateProject(project);
+
+        return responseBody
+                .flatMap(proj -> ServerResponse
+                        .ok()
+                        .contentType(MediaType.TEXT_EVENT_STREAM)
+                        .bodyValue(proj))
+                .doOnError(error -> log.error(error.getMessage() + "\n" + req))
+                .onErrorResume(ProjectIncorrectException.class, error -> ServerResponse.badRequest().build());
     }
 
     public Mono<ServerResponse> getProjectById(ServerRequest req) {
