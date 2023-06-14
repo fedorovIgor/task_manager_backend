@@ -32,7 +32,6 @@ public class TaskServiceImpl implements TaskService {
 
     public Flux<Task> getTasksByProjectId(int projectId) {
         return taskRepository.findByProjectId(projectId)
-                .delayElements(Duration.ofSeconds(2))
                 .map(Task::new)
                 .flatMap(task -> {
                     var user = keycloakProxy.getUserById(task.getUserKeycloakId())
