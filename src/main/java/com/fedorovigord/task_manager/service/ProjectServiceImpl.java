@@ -1,5 +1,6 @@
 package com.fedorovigord.task_manager.service;
 
+import com.fedorovigord.task_manager.exception.TaskIncorrectException;
 import lombok.extern.slf4j.Slf4j;
 import com.fedorovigord.task_manager.exception.ProjectIncorrectException;
 import com.fedorovigord.task_manager.model.project.Project;
@@ -60,12 +61,12 @@ public class ProjectServiceImpl implements ProjectService{
         return project
                 .map(ProjectEntity::new)
                 .flatMap(projectEntity -> {
-                    //check if already exist by given name,
-                    // if not than search by id,
+                    //check if already exist by given id,
+                    // if not than Throw,
                     // if exist update
-                    return projectRepository.findByName(projectEntity.getName())
-                            .switchIfEmpty(projectRepository.findById(projectEntity.getId())
-                                    .flatMap(pr -> projectRepository.save(projectEntity)));
+                    return projectRepository.findById(projectEntity.getId())
+                            .flatMap(pr -> projectRepository.save(projectEntity))
+                            .switchIfEmpty(Mono.error(new ProjectIncorrectException("Task with id not found: " + projectEntity.getId())));
                 })
                 .map(Project::new);
     }

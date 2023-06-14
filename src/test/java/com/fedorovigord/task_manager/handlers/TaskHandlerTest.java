@@ -1,9 +1,10 @@
 package com.fedorovigord.task_manager.handlers;
 
 import com.fedorovigord.task_manager.model.project.Project;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.jupiter.api.*;
+import com.fedorovigord.task_manager.model.project.Task;
+import com.fedorovigord.task_manager.model.project.entity.TaskEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -11,28 +12,21 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.LocalDateTime;
-
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
-import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
-
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
 @EnableAutoConfiguration
 @ActiveProfiles("test")
-class ProjectHandlerTest {
+public class TaskHandlerTest {
 
     @Autowired
     ApplicationContext context;
@@ -45,6 +39,8 @@ class ProjectHandlerTest {
 
     @BeforeEach
     public void setupWebTestClient() {
+
+        var project = new Project(1,null,"TEST_PROJECT", "DESCRIPTION", "ACTIVE");
 
         r2dbcEntityTemplate.delete(Project.class)
                 .from("task")
@@ -61,7 +57,13 @@ class ProjectHandlerTest {
                 .verifyComplete();
 
         r2dbcEntityTemplate.insert(Project.class)
-                .using(new Project(1,null,"TEST_PROJECT", "DESCRIPTION", "ACTIVE"))
+                .using(project)
+                .as(StepVerifier::create)
+                .expectNextCount(1)
+                .verifyComplete();
+
+        r2dbcEntityTemplate.insert(TaskEntity.class)
+                .using(new TaskEntity(new Task(1,"TEST_TASK", "1", project)))
                 .as(StepVerifier::create)
                 .expectNextCount(1)
                 .verifyComplete();
@@ -75,36 +77,25 @@ class ProjectHandlerTest {
 
     @Test
     @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void getAllProjectTest() {
+    void getTaskById_shouldReturnTask_Test() {
 
         webClient
                 .get()
-                .uri("/api/v1/project")
+                .uri("/api/v1/task/1")
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBodyList(Project.class)
+                .expectBodyList(Task.class)
                 .hasSize(1);
     }
 
     @Test
     @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void getProjectById_shouldReturnProject() {
-        webClient
-                .get()
-                .uri("/api/v1/project/1")
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .returnResult(Project.class);
-    }
+    void getTaskById_shouldReturn400_Test() {
 
-    @Test
-    @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void getProjectById_return404() {
         webClient
                 .get()
-                .uri("/api/v1/project/10")
+                .uri("/api/v1/task/10")
                 .exchange()
                 .expectStatus()
                 .is4xxClientError();
@@ -112,70 +103,75 @@ class ProjectHandlerTest {
 
     @Test
     @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void createProject_shouldReturnCreate() {
-        var testProject = Mono.just(new Project(1,null,"TEST_PROJECT_NEW", "DESCRIPTION", "ACTIVE"));
+    void getTaskByProjectId_shouldReturnFlux_Test() {
+
+        webClient
+                .get()
+                .uri("/api/v1/project/1/task")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(Task.class)
+                .hasSize(1);
+    }
+
+    @Test
+    @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
+    void getTaskByProjectId_shouldReturnEmptyListOk_Test() {
+
+        webClient
+                .get()
+                .uri("/api/v1/project/10/task")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(Task.class)
+                .hasSize(0);
+    }
+
+    @Test
+    @WithMockUser(username= "1", authorities = {"ROLE_ADMIN", "ROLE_USER"})
+    void getTaskByUserId_shouldReturnList_Test() {
+
+        webClient
+                .get()
+                .uri("/api/v1/user/task")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(Task.class)
+                .hasSize(1);
+    }
+
+    @Test
+    @WithMockUser(username= "1", authorities = {"ROLE_ADMIN", "ROLE_USER"})
+    void postTask_shouldCreateTask_Test() {
+        var testTask = new Task(0,
+                "SECOND_TASK",
+                "1",
+                new Project(1,null,"TEST_PROJECT", "DESCRIPTION", "ACTIVE"));
 
         webClient
                 .post()
-                .uri("/api/v1/project")
-                .body(testProject, Project.class)
+                .uri("/api/v1/project/1/task")
+                .body(Mono.just(testTask), Task.class)
                 .exchange()
                 .expectStatus()
                 .isCreated();
     }
 
     @Test
-    @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void createProjectWithNullName_shouldCreate400Exception() {
-        var testProject = Mono.just(new Project(0,null,null, "DESCRIPTION", "ACTIVE"));
+    @WithMockUser(username= "1", authorities = {"ROLE_ADMIN", "ROLE_USER"})
+    void postTaskWithIncorrectProjectId_shouldReturn400_Test() {
+        var testTask = new Task(0,
+                "SECOND_TASK",
+                "1",
+                new Project(1,null,"TEST_PROJECT", "DESCRIPTION", "ACTIVE"));
 
         webClient
                 .post()
-                .uri("/api/v1/project")
-                .body(testProject, Project.class)
-                .exchange()
-                .expectStatus()
-                .is4xxClientError();
-    }
-
-    @Test
-    @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void createProjectWithExistName_shouldReturn400Exception() {
-        var testProject = Mono.just(new Project(0,null,"TEST_PROJECT", "DESCRIPTION", "ACTIVE"));
-
-        webClient
-                .post()
-                .uri("/api/v1/project")
-                .body(testProject, Project.class)
-                .exchange()
-                .expectStatus()
-                .is4xxClientError();
-    }
-
-
-    @Test
-    @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void updateProject_shouldReturnCreate() {
-        var testProject = Mono.just(new Project(1,null,"TEST_PROJECT_NEW", "DESCRIPTION_NEW_DESCRIPTION", "COMPLETED"));
-
-        webClient
-                .put()
-                .uri("/api/v1/project")
-                .body(testProject, Project.class)
-                .exchange()
-                .expectStatus()
-                .isOk();
-    }
-
-    @Test
-    @WithMockUser(username= "admin", authorities = {"ROLE_ADMIN", "ROLE_USER"})
-    void updateProject_shouldReturn400_Test() {
-        var testProject = Mono.just(new Project(100,null,"TEST_PROJECT_NEW", "DESCRIPTION_NEW_DESCRIPTION", "COMPLETED"));
-
-        webClient
-                .put()
-                .uri("/api/v1/project")
-                .body(testProject, Project.class)
+                .uri("/api/v1/project/2/task")
+                .body(Mono.just(testTask), Task.class)
                 .exchange()
                 .expectStatus()
                 .is4xxClientError();

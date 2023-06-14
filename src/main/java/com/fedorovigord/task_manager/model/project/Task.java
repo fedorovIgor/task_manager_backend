@@ -25,6 +25,13 @@ public class Task {
     public Task() {
     }
 
+    public Task(int id, String header,String userKeycloakId, Project project) {
+        this.id = id;
+        this.header = header;
+        this.project = project;
+        this.userKeycloakId = userKeycloakId;
+    }
+
     public Task(TaskEntity taskEntity) {
         this.id = taskEntity.getId();
         this.header = taskEntity.getHeader();

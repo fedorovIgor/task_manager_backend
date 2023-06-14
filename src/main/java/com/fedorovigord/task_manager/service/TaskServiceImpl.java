@@ -1,15 +1,18 @@
 package com.fedorovigord.task_manager.service;
 
+import com.fedorovigord.task_manager.exception.TaskIncorrectException;
 import com.fedorovigord.task_manager.model.project.Task;
 import com.fedorovigord.task_manager.model.project.entity.TaskEntity;
 import com.fedorovigord.task_manager.model.user.dto.UserResponseDto;
 import com.fedorovigord.task_manager.proxy.UserProxy;
 import com.fedorovigord.task_manager.repo.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 
@@ -23,15 +26,17 @@ public class TaskServiceImpl implements TaskService {
     public Mono<Task> getTaskById (Integer taskId) {
 
         return taskRepository.findById(taskId)
-                .map(Task::new);
+                .map(Task::new)
+                .switchIfEmpty(Mono.error(new TaskIncorrectException("can`t find task by id " + taskId)));
     }
 
     public Flux<Task> getTasksByProjectId(int projectId) {
         return taskRepository.findByProjectId(projectId)
+                .delayElements(Duration.ofSeconds(2))
                 .map(Task::new)
                 .flatMap(task -> {
                     var user = keycloakProxy.getUserById(task.getUserKeycloakId())
-                            .onErrorReturn(   new UserResponseDto());
+                            .onErrorReturn(new UserResponseDto());
 
                     return Mono.zip(Mono.just(task), user, (t,u) -> {
                         t.setUserName(u.getUsername());
@@ -58,12 +63,13 @@ public class TaskServiceImpl implements TaskService {
                                 t.setStartTime(ts.getStartTime());
                                 t.setFinishTime(ts.getFinishTime());
                                 return taskRepository.save(t);
-                            });
+                            })
+                            .switchIfEmpty(Mono.error(new TaskIncorrectException("can`t find task by id: " + t.getId())));
                 })
                 .map(Task::new);
     }
 
-    public Mono<Task> getTaskToWork(Mono<Task> task, Mono<String> userKeycloakId) {
+    public Mono<Task> updateTaskToWork(Mono<Task> task, Mono<String> userKeycloakId) {
 
         return Mono
                 .zip(task, userKeycloakId, (t,id) -> {
@@ -83,7 +89,7 @@ public class TaskServiceImpl implements TaskService {
                 .map(Task::new);
     }
 
-    public Mono<Task> getTaskToClose(Mono<Task> task) {
+    public Mono<Task> updateTaskToClose(Mono<Task> task) {
         return task
                 .map(Task::getId)
                 .flatMap(id -> {
@@ -96,11 +102,13 @@ public class TaskServiceImpl implements TaskService {
                 })
                 .map(Task::new);
     }
+
     public Mono<Task> saveTask(Mono<Task> task, Integer projectId) {
         return task
                 .map(TaskEntity::new)
                 .doOnNext(t -> t.setProjectIdFk(projectId))
                 .flatMap(t -> taskRepository.save(t))
-                .map(Task::new);
+                .map(Task::new)
+                .onErrorResume(DataIntegrityViolationException.class, e -> Mono.error(new TaskIncorrectException("Can't find project by id: " + projectId)));
     }
 }
