@@ -11,7 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://192.168.1.100:28080/auth/realms/task_manager
+          issuer-uri: http://localhost:28080/auth/realms/task_manager
 
       client:
         registration:
